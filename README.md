@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Task 15: Service Registry and Discovery using Netflix Eureka
 
 ## Project Structure
@@ -47,3 +48,6 @@ Test: http://localhost:8082/courses
 - Spring Cloud 2023.0.0
 - Netflix Eureka Server & Client
 - Maven
+=======
+# full-stack-development
+>>>>>>> 572fe3b7bfbd98d28c2ac2b376eb27b8fa20425d
