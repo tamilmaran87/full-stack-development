@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!-- Head fragment: shared meta, fonts, CSS -->
+<head th:fragment="head(pageTitle)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle != null ? pageTitle + ' | RecruitPro' : 'RecruitPro - Recruitment Management System'}">RecruitPro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<!-- Navbar fragment -->
+<header class="navbar" id="main-navbar" th:fragment="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo">
+            <i class="fas fa-briefcase"></i>
+            <span>Recruit<strong>Pro</strong></span>
+        </a>
+
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </button>
+
+        <nav class="nav-menu" id="navMenu">
+            <ul class="nav-links">
+                <li><a th:href="@{/}" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
+                <li><a th:href="@{/jobs}" class="nav-link"><i class="fas fa-search"></i> Browse Jobs</a></li>
+
+                <!-- Student Menu -->
+                <li sec:authorize="hasRole('STUDENT')">
+                    <a th:href="@{/student/dashboard}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('STUDENT')">
+                    <a th:href="@{/student/applications}" class="nav-link"><i class="fas fa-file-alt"></i> My Applications</a>
+                </li>
+                <li sec:authorize="hasRole('STUDENT')">
+                    <a th:href="@{/student/profile}" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+                </li>
+
+                <!-- Employer Menu -->
+                <li sec:authorize="hasRole('EMPLOYER')">
+                    <a th:href="@{/employer/dashboard}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('EMPLOYER')">
+                    <a th:href="@{/employer/jobs}" class="nav-link"><i class="fas fa-list"></i> My Jobs</a>
+                </li>
+                <li sec:authorize="hasRole('EMPLOYER')">
+                    <a th:href="@{/employer/jobs/new}" class="nav-link"><i class="fas fa-plus-circle"></i> Post Job</a>
+                </li>
+
+                <!-- Admin Menu -->
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/admin/dashboard}" class="nav-link"><i class="fas fa-chart-bar"></i> Analytics</a>
+                </li>
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/admin/users}" class="nav-link"><i class="fas fa-users-cog"></i> Manage Users</a>
+                </li>
+            </ul>
+
+            <div class="nav-auth">
+                <div sec:authorize="isAnonymous()">
+                    <a th:href="@{/auth/login}" class="btn btn-outline-light btn-sm">Login</a>
+                    <a th:href="@{/auth/register}" class="btn btn-primary btn-sm">Register</a>
+                </div>
+                <div sec:authorize="isAuthenticated()" class="nav-user">
+                    <span class="nav-user-name">
+                        <i class="fas fa-user-circle"></i>
+                        <span sec:authentication="name">User</span>
+                    </span>
+                    <form th:action="@{/auth/logout}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+    </div>
+</header>
+
+</html>

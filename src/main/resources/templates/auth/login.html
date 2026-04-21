@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Login')}">
+    <title>Login | RecruitPro</title>
+</head>
+<body>
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card glass-card">
+            <div class="auth-header">
+                <i class="fas fa-sign-in-alt auth-icon"></i>
+                <h1>Welcome Back</h1>
+                <p>Sign in to your account to continue</p>
+            </div>
+
+            <!-- Flash Messages -->
+            <div th:if="${errorMessage}" class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${errorMessage}"></span>
+            </div>
+            <div th:if="${successMessage}" class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${successMessage}"></span>
+            </div>
+
+            <form th:action="@{/auth/login}" method="post" class="auth-form">
+                <div class="form-group">
+                    <label for="username"><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" id="username" name="username" required
+                           placeholder="Enter your email" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="password" name="password" required
+                           placeholder="Enter your password" class="form-control">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Don't have an account? <a th:href="@{/auth/register}">Register here</a></p>
+            </div>
+
+            <div class="demo-credentials">
+                <h4><i class="fas fa-info-circle"></i> Demo Credentials</h4>
+                <div class="demo-grid">
+                    <div class="demo-item">
+                        <span class="demo-role">Admin</span>
+                        <span>admin@company.com / admin123</span>
+                    </div>
+                    <div class="demo-item">
+                        <span class="demo-role">Employer</span>
+                        <span>rajesh@techcorp.com / employer123</span>
+                    </div>
+                    <div class="demo-item">
+                        <span class="demo-role">Student</span>
+                        <span>amit@student.com / student123</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head('Applicants')}">
+    <title>Applicants | RecruitPro</title>
+</head>
+<body>
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main class="page-content">
+    <div class="container">
+        <a th:href="@{/employer/jobs}" class="back-link"><i class="fas fa-arrow-left"></i> Back to My Jobs</a>
+
+        <div class="page-header">
+            <div>
+                <h1><i class="fas fa-users"></i> Applicants</h1>
+                <p>For: <strong th:text="${job.title}">Job Title</strong> &bull; <span th:text="${applications.size()}">0</span> applicant(s)</p>
+            </div>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success">
+            <i class="fas fa-check-circle"></i> <span th:text="${successMessage}"></span>
+        </div>
+
+        <!-- Status Filter -->
+        <div class="filter-section glass-card filter-inline">
+            <span class="filter-label">Filter by status:</span>
+            <a th:href="@{/employer/jobs/{id}/applicants(id=${job.id})}"
+               class="btn btn-sm" th:classappend="${selectedStatus == null ? 'btn-primary' : 'btn-outline'}">All</a>
+            <a th:each="s : ${statuses}"
+               th:href="@{/employer/jobs/{id}/applicants(id=${job.id}, status=${s})}"
+               class="btn btn-sm"
+               th:classappend="${selectedStatus != null && selectedStatus.name() == s.name() ? 'btn-primary' : 'btn-outline'}"
+               th:text="${s}">Status</a>
+        </div>
+
+        <!-- Applicants List -->
+        <div th:if="${not #lists.isEmpty(applications)}">
+            <div class="applicant-card glass-card" th:each="app : ${applications}">
+                <div class="applicant-header">
+                    <div class="applicant-info">
+                        <div class="applicant-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div>
+                            <h3 th:text="${app.student.fullName}">Student Name</h3>
+                            <p class="text-muted">
+                                <i class="fas fa-envelope"></i> <span th:text="${app.student.email}">email</span>
+                                <span th:if="${app.student.phone}"> &bull; <i class="fas fa-phone"></i> <span th:text="${app.student.phone}">phone</span></span>
+                            </p>
+                            <p class="text-muted" th:if="${app.student.experience != null}">
+                                <i class="fas fa-briefcase"></i> <span th:text="${app.student.experience}">0</span> years experience
+                            </p>
+                        </div>
+                    </div>
+                    <span class="status-badge"
+                          th:classappend="${app.status.name() == 'APPLIED' ? 'status-applied' :
+                                            app.status.name() == 'SHORTLISTED' ? 'status-shortlisted' :
+                                            app.status.name() == 'INTERVIEW' ? 'status-interview' :
+                                            app.status.name() == 'HIRED' ? 'status-hired' : 'status-rejected'}"
+                          th:text="${app.status}">Status</span>
+                </div>
+
+                <div class="applicant-details">
+                    <div th:if="${app.student.skills}" class="applicant-skills">
+                        <strong><i class="fas fa-cogs"></i> Skills:</strong>
+                        <div class="job-skills">
+                            <span class="skill-tag" th:each="skill : ${#strings.arraySplit(app.student.skills, ',')}"
+                                  th:text="${#strings.trim(skill)}">Skill</span>
+                        </div>
+                    </div>
+
+                    <div th:if="${app.coverLetter}" class="applicant-cover-letter">
+                        <strong><i class="fas fa-pen"></i> Cover Letter:</strong>
+                        <p th:text="${app.coverLetter}">Cover letter text...</p>
+                    </div>
+
+                    <div class="applicant-meta">
+                        <span><i class="fas fa-calendar"></i> Applied: <span th:text="${#temporals.format(app.appliedDate, 'dd MMM yyyy HH:mm')}">Date</span></span>
+                        <a th:if="${app.resumePath != null}" th:href="@{/uploads/resumes/{file}(file=${app.resumePath})}"
+                           target="_blank" class="btn btn-sm btn-outline">
+                            <i class="fas fa-download"></i> Download Resume
+                        </a>
+                    </div>
+                </div>
+
+                <div class="applicant-actions">
+                    <span class="action-label">Change Status:</span>
+                    <form th:action="@{/employer/applications/{id}/status(id=${app.id})}" method="post" class="status-form">
+                        <input type="hidden" name="jobId" th:value="${job.id}">
+                        <button type="submit" name="status" value="SHORTLISTED" class="btn btn-sm btn-info"
+                                th:disabled="${app.status.name() == 'SHORTLISTED'}">
+                            <i class="fas fa-star"></i> Shortlist
+                        </button>
+                        <button type="submit" name="status" value="INTERVIEW" class="btn btn-sm btn-warning"
+                                th:disabled="${app.status.name() == 'INTERVIEW'}">
+                            <i class="fas fa-calendar-check"></i> Interview
+                        </button>
+                        <button type="submit" name="status" value="HIRED" class="btn btn-sm btn-success"
+                                th:disabled="${app.status.name() == 'HIRED'}">
+                            <i class="fas fa-trophy"></i> Hire
+                        </button>
+                        <button type="submit" name="status" value="REJECTED" class="btn btn-sm btn-danger"
+                                th:disabled="${app.status.name() == 'REJECTED'}">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(applications)}" class="empty-state">
+            <i class="fas fa-users"></i>
+            <h3>No applicants yet</h3>
+            <p>Applications will appear here once candidates apply</p>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

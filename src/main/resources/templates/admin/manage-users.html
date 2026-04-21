@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head('Manage Users')}">
+    <title>Manage Users | RecruitPro</title>
+</head>
+<body>
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main class="page-content">
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-users-cog"></i> Manage Users</h1>
+            <p th:text="'Total: ' + ${users.size()} + ' user(s)'">0 users</p>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success">
+            <i class="fas fa-check-circle"></i> <span th:text="${successMessage}"></span>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="filter-section glass-card filter-inline">
+            <form th:action="@{/admin/users}" method="get" class="filter-form-inline">
+                <input type="text" name="search" th:value="${search}" placeholder="Search by name or email..."
+                       class="form-control form-control-sm">
+                <select name="role" class="form-control form-control-sm">
+                    <option value="">All Roles</option>
+                    <option th:each="r : ${roles}" th:value="${r}" th:text="${r}"
+                            th:selected="${r == selectedRole}">Role</option>
+                </select>
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-search"></i> Search</button>
+                <a th:href="@{/admin/users}" class="btn btn-outline btn-sm"><i class="fas fa-times"></i> Clear</a>
+            </form>
+        </div>
+
+        <!-- Users Table -->
+        <div class="table-card glass-card" th:if="${not #lists.isEmpty(users)}">
+            <div class="table-responsive">
+                <table class="data-table" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Phone</th>
+                            <th>Joined</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="u : ${users}">
+                            <td th:text="${u.id}">#</td>
+                            <td><strong th:text="${u.fullName}">Name</strong></td>
+                            <td th:text="${u.email}">email</td>
+                            <td>
+                                <span class="role-badge"
+                                      th:classappend="${u.role.name() == 'ADMIN' ? 'role-admin' :
+                                                        u.role.name() == 'EMPLOYER' ? 'role-employer' : 'role-student'}"
+                                      th:text="${u.role}">Role</span>
+                            </td>
+                            <td th:text="${u.phone ?: '-'}">Phone</td>
+                            <td th:text="${#temporals.format(u.createdAt, 'dd MMM yyyy')}">Date</td>
+                            <td>
+                                <span class="status-badge"
+                                      th:classappend="${u.enabled ? 'status-hired' : 'status-rejected'}"
+                                      th:text="${u.enabled ? 'Active' : 'Disabled'}">Status</span>
+                            </td>
+                            <td>
+                                <form th:action="@{/admin/users/{id}/toggle(id=${u.id})}" method="post"
+                                      th:if="${u.role.name() != 'ADMIN'}">
+                                    <button type="submit" class="btn btn-sm"
+                                            th:classappend="${u.enabled ? 'btn-danger' : 'btn-success'}"
+                                            th:text="${u.enabled ? 'Disable' : 'Enable'}">Toggle</button>
+                                </form>
+                                <span th:if="${u.role.name() == 'ADMIN'}" class="text-muted">—</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(users)}" class="empty-state">
+            <i class="fas fa-users"></i>
+            <h3>No users found</h3>
+            <p>Try adjusting your search filters</p>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

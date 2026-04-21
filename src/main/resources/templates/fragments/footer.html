@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<footer class="footer" th:fragment="footer">
+    <div class="footer-container">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <a href="/" class="footer-logo">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Recruit<strong>Pro</strong></span>
+                </a>
+                <p>Connecting talent with opportunity. Your next career move starts here.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a th:href="@{/}">Home</a></li>
+                    <li><a th:href="@{/jobs}">Browse Jobs</a></li>
+                    <li><a th:href="@{/auth/register}">Register</a></li>
+                    <li><a th:href="@{/auth/login}">Login</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Categories</h4>
+                <ul>
+                    <li><a href="#">Information Technology</a></li>
+                    <li><a href="#">Marketing</a></li>
+                    <li><a href="#">Design</a></li>
+                    <li><a href="#">Finance</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Contact</h4>
+                <ul>
+                    <li><i class="fas fa-envelope"></i> hr@recruitpro.com</li>
+                    <li><i class="fas fa-phone"></i> +91 98765 43210</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Bangalore, India</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 RecruitPro. All rights reserved. Built with Spring Boot &amp; Thymeleaf.</p>
+        </div>
+    </div>
+</footer>
+
+</html>

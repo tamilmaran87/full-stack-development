@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head('Register')}">
+    <title>Register | RecruitPro</title>
+</head>
+<body>
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card glass-card">
+            <div class="auth-header">
+                <i class="fas fa-user-plus auth-icon"></i>
+                <h1>Create Account</h1>
+                <p>Join RecruitPro and start your journey</p>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <form th:action="@{/auth/register}" th:object="${user}" method="post" class="auth-form">
+
+                <div class="form-group">
+                    <label for="role"><i class="fas fa-users"></i> I am a</label>
+                    <select id="role" th:field="*{role}" class="form-control" required>
+                        <option value="">-- Select Role --</option>
+                        <option value="STUDENT">Job Seeker / Student</option>
+                        <option value="EMPLOYER">Employer / HR</option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('role')}" th:errors="*{role}" class="field-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="fullName"><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" id="fullName" th:field="*{fullName}" required
+                           placeholder="Enter your full name" class="form-control">
+                    <span th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" class="field-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" id="email" th:field="*{email}" required
+                           placeholder="Enter your email" class="form-control">
+                    <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="field-error"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password"><i class="fas fa-lock"></i> Password</label>
+                        <input type="password" id="password" th:field="*{password}" required
+                               placeholder="Min 6 characters" class="form-control">
+                        <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="field-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword"><i class="fas fa-lock"></i> Confirm Password</label>
+                        <input type="password" id="confirmPassword" th:field="*{confirmPassword}" required
+                               placeholder="Re-enter password" class="form-control">
+                        <span th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" class="field-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
+                    <input type="tel" id="phone" th:field="*{phone}"
+                           placeholder="Enter phone number (optional)" class="form-control">
+                </div>
+
+                <!-- Student-specific fields -->
+                <div id="studentFields" style="display:none;">
+                    <div class="form-group">
+                        <label for="skills"><i class="fas fa-cogs"></i> Skills</label>
+                        <input type="text" id="skills" th:field="*{skills}"
+                               placeholder="e.g. Java, Python, React, SQL" class="form-control">
+                        <small class="form-hint">Separate skills with commas</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="experience"><i class="fas fa-briefcase"></i> Years of Experience</label>
+                        <input type="number" id="experience" th:field="*{experience}"
+                               min="0" max="50" placeholder="0" class="form-control">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Already have an account? <a th:href="@{/auth/login}">Sign in here</a></p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/js/main.js}"></script>
+<script>
+    // Show/hide student fields based on role
+    document.getElementById('role').addEventListener('change', function() {
+        const studentFields = document.getElementById('studentFields');
+        studentFields.style.display = this.value === 'STUDENT' ? 'block' : 'none';
+    });
+    // On page load, check if student is selected
+    if (document.getElementById('role').value === 'STUDENT') {
+        document.getElementById('studentFields').style.display = 'block';
+    }
+</script>
+</body>
+</html>

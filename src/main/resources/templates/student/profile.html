@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head('My Profile')}">
+    <title>My Profile | RecruitPro</title>
+</head>
+<body>
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main class="page-content">
+    <div class="container container-sm">
+        <div class="page-header"><h1><i class="fas fa-user-circle"></i> My Profile</h1></div>
+
+        <div th:if="${successMessage}" class="alert alert-success">
+            <i class="fas fa-check-circle"></i> <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${errorMessage}"></span>
+        </div>
+
+        <div class="form-card glass-card">
+            <form th:action="@{/student/profile}" method="post" enctype="multipart/form-data" class="styled-form">
+                <div class="profile-avatar">
+                    <div class="avatar-circle">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2 th:text="${user.fullName}">Name</h2>
+                    <span class="role-badge">Student / Job Seeker</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="fullName"><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" id="fullName" name="fullName" th:value="${user.fullName}" required class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email (cannot be changed)</label>
+                    <input type="email" th:value="${user.email}" disabled class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
+                    <input type="tel" id="phone" name="phone" th:value="${user.phone}" class="form-control" placeholder="Enter phone number">
+                </div>
+
+                <div class="form-group">
+                    <label for="skills"><i class="fas fa-cogs"></i> Skills</label>
+                    <input type="text" id="skills" name="skills" th:value="${user.skills}" class="form-control" placeholder="e.g. Java, Python, React">
+                    <small class="form-hint">Separate skills with commas</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="experience"><i class="fas fa-briefcase"></i> Years of Experience</label>
+                    <input type="number" id="experience" name="experience" th:value="${user.experience}" min="0" max="50" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="resumeFile"><i class="fas fa-file-pdf"></i> Resume</label>
+                    <div th:if="${user.resumePath != null}" class="current-file">
+                        <i class="fas fa-file"></i> Current resume uploaded
+                        <a th:href="@{/uploads/resumes/{file}(file=${user.resumePath})}" target="_blank" class="btn btn-sm btn-outline">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+                    <input type="file" id="resumeFile" name="resumeFile" accept=".pdf,.doc,.docx" class="form-control">
+                    <small class="form-hint">PDF, DOC, DOCX (max 10MB). Upload new to replace existing.</small>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save"></i> Save Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

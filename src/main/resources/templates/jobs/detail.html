@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head(${job.title})}">
+    <title th:text="${job.title + ' | RecruitPro'}">Job Detail | RecruitPro</title>
+</head>
+<body>
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main class="page-content">
+    <div class="container">
+        <a th:href="@{/jobs}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Jobs</a>
+
+        <div class="job-detail-grid">
+            <!-- Main Content -->
+            <div class="job-detail-main glass-card">
+                <div class="job-detail-header">
+                    <span class="job-category-badge" th:text="${job.category}">IT</span>
+                    <span class="job-status-badge active" th:if="${job.active}">Active</span>
+                    <span class="job-status-badge inactive" th:unless="${job.active}">Closed</span>
+                </div>
+                <h1 th:text="${job.title}">Job Title</h1>
+
+                <div class="job-detail-meta">
+                    <span><i class="fas fa-building"></i> <span th:text="${job.employer.fullName}">Company</span></span>
+                    <span><i class="fas fa-map-marker-alt"></i> <span th:text="${job.location ?: 'Remote'}">Location</span></span>
+                    <span><i class="fas fa-calendar"></i> Posted: <span th:text="${#temporals.format(job.postedDate, 'dd MMM yyyy')}">Date</span></span>
+                    <span th:if="${job.deadline}"><i class="fas fa-hourglass-half"></i> Deadline: <span th:text="${#temporals.format(job.deadline, 'dd MMM yyyy')}">Date</span></span>
+                </div>
+
+                <div class="job-detail-highlights">
+                    <div class="highlight" th:if="${job.salary != null}">
+                        <i class="fas fa-rupee-sign"></i>
+                        <div>
+                            <strong th:text="'₹' + ${#numbers.formatDecimal(job.salary, 0, 'COMMA', 0, 'POINT')}">Salary</strong>
+                            <small>per year</small>
+                        </div>
+                    </div>
+                    <div class="highlight">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <strong th:text="${job.experienceRequired + '+ years'}">Experience</strong>
+                            <small>experience required</small>
+                        </div>
+                    </div>
+                    <div class="highlight">
+                        <i class="fas fa-users"></i>
+                        <div>
+                            <strong th:text="${job.applications.size() + ' applicants'}">Applicants</strong>
+                            <small>applied so far</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="job-detail-section">
+                    <h2><i class="fas fa-file-alt"></i> Job Description</h2>
+                    <div class="job-description-full" th:text="${job.description}">Description</div>
+                </div>
+
+                <div class="job-detail-section" th:if="${job.skillsRequired != null}">
+                    <h2><i class="fas fa-cogs"></i> Skills Required</h2>
+                    <div class="job-skills">
+                        <span class="skill-tag" th:each="skill : ${#strings.arraySplit(job.skillsRequired, ',')}"
+                              th:text="${#strings.trim(skill)}">Skill</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar - Apply Section -->
+            <div class="job-detail-sidebar">
+                <div class="apply-card glass-card">
+                    <h3><i class="fas fa-paper-plane"></i> Apply for this Job</h3>
+
+                    <div th:if="${successMessage}" class="alert alert-success">
+                        <i class="fas fa-check-circle"></i> <span th:text="${successMessage}"></span>
+                    </div>
+                    <div th:if="${errorMessage}" class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i> <span th:text="${errorMessage}"></span>
+                    </div>
+
+                    <!-- Already Applied -->
+                    <div th:if="${hasApplied}" class="applied-badge">
+                        <i class="fas fa-check-circle"></i>
+                        <p>You have already applied for this job</p>
+                    </div>
+
+                    <!-- Apply Form (Student only, not yet applied) -->
+                    <div sec:authorize="hasRole('STUDENT')" th:unless="${hasApplied}">
+                        <form th:action="@{/student/apply/{id}(id=${job.id})}" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="coverLetter"><i class="fas fa-pen"></i> Cover Letter (Optional)</label>
+                                <textarea id="coverLetter" name="coverLetter" rows="5"
+                                          placeholder="Tell the employer why you're a great fit..."
+                                          class="form-control"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="resumeFile"><i class="fas fa-file-pdf"></i> Upload Resume (Optional)</label>
+                                <input type="file" id="resumeFile" name="resumeFile"
+                                       accept=".pdf,.doc,.docx" class="form-control">
+                                <small class="form-hint">PDF, DOC, DOCX (max 10MB). Leave empty to use profile resume.</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-full btn-lg">
+                                <i class="fas fa-paper-plane"></i> Submit Application
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Not logged in -->
+                    <div sec:authorize="isAnonymous()">
+                        <p class="apply-login-prompt">Please login to apply for this job</p>
+                        <a th:href="@{/auth/login}" class="btn btn-primary btn-full">
+                            <i class="fas fa-sign-in-alt"></i> Login to Apply
+                        </a>
+                        <p class="apply-register-prompt">
+                            Don't have an account? <a th:href="@{/auth/register}">Register here</a>
+                        </p>
+                    </div>
+
+                    <!-- Employer viewing -->
+                    <div sec:authorize="hasRole('EMPLOYER')">
+                        <p class="apply-login-prompt">You are logged in as an employer</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

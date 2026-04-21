@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: head('Browse Jobs')}">
+    <title>Browse Jobs | RecruitPro</title>
+</head>
+<body>
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main class="page-content">
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-search"></i> Browse Jobs</h1>
+            <p th:text="'Showing ' + ${jobs.size()} + ' job(s)'">Showing 0 jobs</p>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="filter-section glass-card">
+            <form th:action="@{/jobs}" method="get" class="filter-form">
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label><i class="fas fa-search"></i> Keyword</label>
+                        <input type="text" name="keyword" th:value="${keyword}"
+                               placeholder="Job title, skill..." class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> Category</label>
+                        <select name="category" class="form-control">
+                            <option value="">All Categories</option>
+                            <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"
+                                    th:selected="${cat == selectedCategory}">Category</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-map-marker-alt"></i> Location</label>
+                        <input type="text" name="location" th:value="${location}"
+                               placeholder="City or Remote" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-clock"></i> Max Experience (yrs)</label>
+                        <input type="number" name="experience" th:value="${experience}"
+                               min="0" max="50" placeholder="Any" class="form-control">
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+                    <a th:href="@{/jobs}" class="btn btn-outline"><i class="fas fa-times"></i> Clear</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Jobs Grid -->
+        <div class="jobs-grid" th:if="${not #lists.isEmpty(jobs)}">
+            <div class="job-card glass-card" th:each="job : ${jobs}">
+                <div class="job-card-header">
+                    <span class="job-category-badge" th:text="${job.category}">IT</span>
+                    <span class="job-date" th:text="${#temporals.format(job.postedDate, 'dd MMM yyyy')}">01 Jan 2026</span>
+                </div>
+                <h3 class="job-title" th:text="${job.title}">Job Title</h3>
+                <div class="job-meta">
+                    <span><i class="fas fa-building"></i> <span th:text="${job.employer.fullName}">Company</span></span>
+                    <span><i class="fas fa-map-marker-alt"></i> <span th:text="${job.location ?: 'Remote'}">Location</span></span>
+                </div>
+                <div class="job-meta">
+                    <span th:if="${job.salary != null}"><i class="fas fa-rupee-sign"></i> <span th:text="${#numbers.formatDecimal(job.salary, 0, 'COMMA', 0, 'POINT')}">0</span>/year</span>
+                    <span><i class="fas fa-clock"></i> <span th:text="${job.experienceRequired}">0</span>+ years</span>
+                </div>
+                <p class="job-description" th:text="${#strings.abbreviate(job.description, 120)}">Description...</p>
+                <div class="job-skills" th:if="${job.skillsRequired != null}">
+                    <span class="skill-tag" th:each="skill : ${#strings.arraySplit(job.skillsRequired, ',')}" th:text="${#strings.trim(skill)}">Skill</span>
+                </div>
+                <a th:href="@{/jobs/{id}(id=${job.id})}" class="btn btn-outline btn-full">View Details <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(jobs)}" class="empty-state">
+            <i class="fas fa-search"></i>
+            <h3>No jobs found</h3>
+            <p>Try adjusting your search filters</p>
+            <a th:href="@{/jobs}" class="btn btn-primary">Clear Filters</a>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
