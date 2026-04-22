@@ -1,0 +1,4 @@
+com\example\courseservice\CourseServiceApplication.class
+com\example\courseservice\controller\CourseController.class
+com\example\courseservice\service\CourseService.class
+com\example\courseservice\config\AppConfig.class
